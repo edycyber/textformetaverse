@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gran Premio de la Ciudad de México 2026 — 3D Race World</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e8edf4;--panel:#fff;--ink:#16212f;--mute:#5d6d85;--pink:#e6397a;--gold:#f6b02a;--teal:#1f9a8f;--grass:#cfe3d0;--road:#56627a;--line:#c9d3e2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17202e;--panel:#223048;--ink:#f1ece2;--mute:#9fb0c8;--grass:#1d3a36;--road:#47536b;--line:#34445f}}
+:root[data-theme="dark"]{--bg:#17202e;--panel:#223048;--ink:#f1ece2;--mute:#9fb0c8;--grass:#1d3a36;--road:#47536b;--line:#34445f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.45}
+header{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:baseline;justify-content:space-between;padding:14px 18px;border-bottom:4px solid var(--pink)}
+h1{font-size:clamp(20px,3.4vw,32px);font-weight:800;margin:0;letter-spacing:-.01em}
+header p{margin:0;color:var(--mute);font-size:14px}
+main{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:14px;padding:14px;max-width:1280px;margin:auto}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+[hidden]{display:none!important}
+#c3{width:100%;aspect-ratio:16/10;touch-action:none;background:#8fc4ee}#c3 canvas{width:100%;height:100%;display:block;cursor:grab}
+#cams{margin-top:8px}#cams button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+#mm{position:absolute;right:10px;bottom:10px;background:color-mix(in srgb,var(--panel) 80%,transparent);border-radius:8px;border:1px solid var(--line)}
+li.v{display:flex;justify-content:space-between;cursor:pointer}li.v em{margin-left:8px}
+.stage{position:relative;background:var(--grass);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+canvas{display:block;width:100%;height:auto}
+.hud{position:absolute;top:10px;left:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{background:var(--panel);color:var(--ink);border-radius:8px;padding:5px 11px;font-weight:700;font-size:15px;border:1px solid var(--line)}
+.flag{transition:background .2s}
+.flag.green{background:#2fa84f;color:#fff}.flag.vsc,.flag.sc{background:var(--gold);color:#1a1a1a}.flag.red{background:#d62839;color:#fff}.flag.fin{background:#fff;color:#111}
+.lights{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:none;gap:10px;background:#101722;padding:12px 16px;border-radius:12px}
+.lights i{width:26px;height:26px;border-radius:50%;background:#3a1a1e}.lights i.on{background:#ff2d3b;box-shadow:0 0 14px #ff2d3b}
+.ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:color-mix(in srgb,var(--bg) 88%,transparent);text-align:center;padding:20px}
+.ov h2{margin:0;font-size:clamp(22px,4vw,38px);font-weight:800}
+.ov p{margin:0;max-width:46ch;color:var(--mute)}
+button,select{font:inherit;font-weight:700;border-radius:9px;border:2px solid var(--ink);background:var(--panel);color:var(--ink);padding:7px 14px;cursor:pointer}
+button.go{background:var(--pink);border-color:var(--pink);color:#fff}
+button:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.ctrl{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
+.ctrl button{padding:5px 11px;font-size:14px}
+.booth{margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px;min-height:150px}
+.booth h3{margin:0 0 6px;font-size:15px;color:var(--mute);font-weight:700}
+.ln{margin:0 0 9px;font-size:16px}.ln b{color:var(--pink)}.ln.c b{color:var(--teal)}.ln:not(:first-of-type){opacity:.62}
+aside{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;align-self:start}
+aside h3{margin:2px 6px 8px;font-size:15px}
+ol{list-style:none;margin:0;padding:0}
+li{display:grid;grid-template-columns:22px 5px 40px 1fr auto;gap:7px;align-items:center;padding:4px 6px;font-size:14px;border-radius:6px}
+li:nth-child(odd){background:color-mix(in srgb,var(--line) 35%,transparent)}
+li i{height:16px;border-radius:2px}li em{font-style:normal;color:var(--mute);font-variant-numeric:tabular-nums}
+li s{text-decoration:none;font-size:11px;font-weight:700;color:#fff;background:var(--pink);border-radius:4px;padding:0 4px;margin-left:3px}
+.out{opacity:.45}
+table{border-collapse:collapse;margin-top:6px}td,th{padding:4px 12px;text-align:left;border-bottom:1px solid var(--line)}
+small{display:block;margin-top:8px;color:var(--mute);font-size:12px}
+@media (prefers-reduced-motion:reduce){.flag{transition:none}}
+</style>
+</head>
+<body>
+<header>
+<h1>Gran Premio de la Ciudad de México 2026</h1>
+<p>Autódromo Hermanos Rodríguez · 1 November 2026 · 71 laps · lights out 14:00 local</p>
+</header>
+<main>
+<div>
+<div class="stage">
+<div id="c3"></div>
+<div class="hud"><span class="chip" id="lap">Lap 0/71</span><span class="chip flag green" id="flag">Green flag</span><span class="chip" id="net">Solo</span></div>
+<canvas id="mm" width="170" height="102" aria-label="Minimap"></canvas>
+<div class="lights" id="lights"><i></i><i></i><i></i><i></i><i></i></div>
+<div class="ov" id="intro">
+<h2>The Mexico City Grand Prix, a shared 3D world</h2>
+<p>A live 3D circuit you can walk through as a visitor. Everyone who opens this artifact joins the same paddock: you see each other’s avatars, chat, react and watch one synchronised race, scripted from the official race reconstruction, with a two-person commentary booth. Voice-over uses your browser’s speech engine.</p>
+<button class="go" id="goV">Start with voice-over</button>
+<button id="goC">Start with captions only</button>
+</div>
+<div class="ov" id="end" hidden></div>
+</div>
+<div class="ctrl">
+<button id="pp">Pause</button>
+<label>Speed <select id="spd"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select></label>
+<label><input type="checkbox" id="vo"> Voice-over</label>
+<label><input type="checkbox" id="amb"> Crowd ambience</label>
+<span style="flex:1"></span>
+<span id="jumps" style="display:flex;gap:6px;flex-wrap:wrap"></span>
+</div>
+<div class="booth" aria-live="polite"><h3>Commentary booth</h3><div id="log"></div></div>
+<small>Multiplayer works for people signed in to claude.ai who have access to this artifact; anyone else explores solo. The circuit and grandstands are a stylised model, not a survey. Race events follow the supplied guide; where it records no distinct event, the booth stays quiet instead of inventing one. The guide shows the final Safety Car restart on both laps 65 and 71; this sim runs the field behind the Safety Car until the final-lap restart.</small>
+</div>
+<div style="display:grid;gap:14px;align-self:start"><aside><h3>Timing tower</h3><ol id="tw"></ol></aside>
+<aside><h3>Paddock: who is here</h3><ol id="vis"></ol>
+<div id="msgs" style="max-height:130px;overflow:auto;font-size:13px;margin:8px 4px" aria-live="polite"></div>
+<input id="ci" maxlength="200" placeholder="Chat with the paddock, then Enter" aria-label="Chat message" style="width:100%;font:inherit;padding:7px 10px;border-radius:9px;border:2px solid var(--line);background:var(--bg);color:var(--ink)">
+<div class="ctrl" id="em"></div></aside></div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+/* ---- circuit ---- */
+const P=[[350,510],[700,510],[800,495],[850,440],[800,390],[860,340],[790,290],[700,260],[640,310],[560,250],[470,205],[390,235],[300,160],[180,120],[100,175],[130,265],[215,305],[190,365],[105,400],[95,470],[170,510]];
+const cr=(a,b,c,d,t)=>[0,1].map(k=>.5*(2*b[k]+(-a[k]+c[k])*t+(2*a[k]-5*b[k]+4*c[k]-d[k])*t*t+(-a[k]+3*b[k]-3*c[k]+d[k])*t**3));
+let raw=[];const n=P.length;
+for(let i=0;i<n;i++)for(let s=0;s<24;s++)raw.push(cr(P[(i+n-1)%n],P[i],P[(i+1)%n],P[(i+2)%n],s/24));
+let cum=[0];for(let i=1;i<=raw.length;i++){const a=raw[i-1],b=raw[i%raw.length];cum.push(cum[i-1]+Math.hypot(b[0]-a[0],b[1]-a[1]))}
+const TL=cum[cum.length-1],N=1200,R=[];let j=0;
+for(let i=0;i<N;i++){const d=i/N*TL;while(cum[j+1]<d)j++;const a=raw[j],b=raw[(j+1)%raw.length],t=(d-cum[j])/(cum[j+1]-cum[j]||1);R.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t])}
+function pos(f){f=((f%1)+1)%1;const k=f*N,i=Math.floor(k),a=R[i],b=R[(i+1)%N],t=k-i;return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,Math.atan2(b[1]-a[1],b[0]-a[0])]}
+const near=(px,py)=>{let m=1e9,bi=0;R.forEach((p,i)=>{const d=Math.hypot(p[0]-px,p[1]-py);if(d<m){m=d;bi=i}});return bi/N};
+const T1=near(800,495),T6=near(790,290);
+/* ---- drivers ---- */
+const D={VER:['#3671C6',0],HAM:['#E8002D',0],LEC:['#E8002D',1],ANT:['#27F4D2',0],RUS:['#27F4D2',1],NOR:['#FF8000',0],PIA:['#FF8000',1],LIN:['#6692FF',0],GAS:['#FF87BC',0],BOT:['#9aa3ad',0],HAD:['#3671C6',1],STR:['#229971',0],ALO:['#229971',1]};
+const K=[[1,'LEC VER HAM ANT NOR RUS PIA LIN GAS BOT HAD STR ALO'],[28,'ANT NOR VER LEC HAM RUS PIA LIN GAS BOT HAD'],[39,'ANT VER LEC HAM NOR RUS PIA LIN GAS BOT HAD'],[43,'VER HAM LEC ANT NOR RUS PIA LIN GAS BOT HAD'],[47,'VER HAM ANT LEC NOR RUS PIA LIN GAS HAD']];
+const outAt={ALO:4,STR:6,BOT:44,LIN:64},parkEnd={STR:8,BOT:46,LIN:71},park={STR:T6,BOT:T1,LIN:T1+.012};
+const PITS={3:['ALO','STR'],17:['GAS'],26:['PIA'],27:['LEC','VER'],28:['HAM'],33:['RUS'],35:['LIN'],39:['NOR'],43:['ANT']};
+const orderAt=l=>{let o=K[0][1];K.forEach(k=>{if(l>=k[0])o=k[1]});return o.split(' ')};
+const gone=(c,l)=>outAt[c]&&l>=outAt[c];
+const spac=(l,r,m)=>{
+ if(m=='sc'||m=='red')return .55;if(m=='vsc')return .9;
+ if(l>=71)return[0,.799,3.207,6.701,1.071,.485][r]||2;
+ if(l>=47)return r==1?1:r==2?2.2:1.8;
+ if(l>=28&&l<43)return r<5?3.5:2;
+ if(r==1)return l<12?1+l*.18:l<22?3.2+(l-12)*.18:5;
+ if(r==2)return l<22?2:2.5;return 1.6};
+/* ---- commentary (M = play-by-play, I = analyst) ---- */
+const C={
+1:[['M','Lights out in Mexico City! Hamilton and Leclerc fight for the lead, and Verstappen gets a strong launch to go second.'],['I','Leclerc cuts the track in that opening fight. A five-second penalty is coming. Russell also touches Hadjar, who spins.']],
+2:[['M','The order settles. Leclerc leads, Verstappen and Hamilton right behind him.']],
+3:[['M','Both Aston Martins pit already, trying to manage power-unit temperatures.'],['I','Alonso will retire later. Stroll continues for the moment.']],
+6:[['M','Stroll stops on track at Turn 6.']],
+7:[['M','Virtual Safety Car. Stroll’s Aston is recovered while the field runs at reduced speed.']],
+8:[['M','Green flag again. Leclerc leads Verstappen.']],
+12:[['I','Leclerc has built about three point two seconds, and his five-second penalty is now confirmed.']],
+17:[['M','Gasly makes an early stop for medium tyres.']],
+22:[['M','Leclerc’s lead over Verstappen is now around five seconds, with Hamilton behind the leading pair.']],
+24:[['I','Hamilton is frustrated on team radio about Leclerc’s penalty. He is about seven and a half seconds off the lead.']],
+26:[['M','Piastri is first of the leading group to pit, soft to medium tyres.']],
+27:[['M','Leclerc and Verstappen both pit. Verstappen comes out ahead after Leclerc serves his five seconds.']],
+28:[['M','Hamilton pits for mediums, and Antonelli inherits the lead for now.'],['I','Several rivals have yet to stop, so this is strategy, not pace.']],
+33:[['M','Russell pits and serves his ten-second penalty. Norris moves clear as the stops reshape the order.']],
+35:[['M','Lindblad makes his stop and rejoins in the midfield.']],
+38:[['I','Antonelli leads Norris with Verstappen closing, and the top five are covered by roughly fifteen seconds.']],
+39:[['M','Norris pits for mediums and rejoins in fifth.']],
+43:[['M','Antonelli stops and rejoins fourth. A Safety Car is deployed moments later.']],
+44:[['M','Safety Car. Bottas crashes at Turn 1, an apparent front-left suspension failure.'],['I','He is able to leave the car and is checked by medical staff.']],
+45:[['M','The Safety Car period continues while officials assess the crash and the barrier damage.']],
+46:[['M','Red flag. The race is stopped for barrier repairs, and we will have a standing restart.']],
+47:[['M','Standing start! Verstappen leads Hamilton, and Antonelli passes Leclerc at Turn 1 for third.']],
+50:[['I','Antonelli is now established in third, a position that would secure the championship.']],
+58:[['M','Verstappen leads Hamilton, Antonelli third. The leading trio remain closely matched.']],
+64:[['M','Late Safety Car. Piastri and Lindblad collide in the opening corners, and Lindblad hits the barriers and retires.'],['I','The field is bunched up with the finish almost in sight.']],
+68:[['M','Still behind the Safety Car. Verstappen leads Hamilton and Antonelli.']],
+71:[['M','Final lap, and the restart! Verstappen gets a strong getaway, with Hamilton and Antonelli right behind.']]};
+/* ---- state ---- */
+let lapPos=-.001,lastLap=0,mode='idle',spd=1,playing=false,voiceOn=false,redDone=false,snap=true,voices=[];
+const off={};Object.keys(D).forEach(c=>off[c]=0);
+const logEl=$('#log');
+function say(w,t){
+ const e=document.createElement('p');e.className='ln '+(w=='I'?'c':'');e.innerHTML='<b>'+(w=='I'?'Inés':'Mateo')+':</b> '+t;
+ logEl.prepend(e);while(logEl.children.length>4)logEl.lastChild.remove();
+ if(!voiceOn||!window.speechSynthesis)return;
+ const u=new SpeechSynthesisUtterance(t),v=voices.length?voices:speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));
+ if(v.length)u.voice=w=='I'&&v[1]?v[1]:v[0];u.lang='en-GB';u.pitch=w=='I'?1.2:.85;u.rate=1.04;speechSynthesis.speak(u)}
+if(window.speechSynthesis){speechSynthesis.onvoiceschanged=()=>{voices=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang))}}
+const modeFor=l=>l==7?'vsc':(l>=44&&l<=46)||(l>=64&&l<=70)?'sc':'green';
+function onLap(l){if(mode!='lights'&&mode!='red')setMode(modeFor(l));(C[l]||[]).forEach(a=>say(a[0],a[1]))}
+function setMode(m){mode=m;const f=$('#flag');f.className='chip flag '+(m=='vsc'?'vsc':m=='sc'?'sc':m=='red'?'red':m=='fin'?'fin':'green');
+ f.textContent={green:'Green flag',vsc:'Virtual Safety Car',sc:'Safety Car',red:'Red flag',fin:'Chequered flag',lights:'Standing start',idle:'Green flag'}[m]}
+function lights(done){
+ const L=$('#lights'),is=[...L.children];L.style.display='flex';is.forEach(i=>i.className='');setMode('lights');snap=true;
+ let k=0;const iv=setInterval(()=>{if(k<5){is[k++].className='on';lk=k}else{lk=0;clearInterval(iv);L.style.display='none';done()}},650/spd+150)}
+function gridStart(lp,ll){lapPos=lp;lastLap=ll;lights(()=>setMode(modeFor(ll+1)))}
+function startRed(){redDone=true;setMode('red');say('I','The barriers need repairs, so the cars wait on the grid before the restart.');
+ setTimeout(()=>{if(mode=='red')gridStart(45.999,46)},6500/spd)}
+function finish(){setMode('fin');
+ say('M','Chequered flag! Verstappen wins in Mexico City, holding off Hamilton by under a second.');
+ say('I','Antonelli finishes third and secures the 2026 Drivers’ Championship.');
+ setTimeout(()=>{const e=$('#end');e.hidden=false;e.innerHTML='<h2>Verstappen wins in Mexico City</h2><p>Antonelli’s third place secures the 2026 Drivers’ Championship.</p><table><tr><th>Pos</th><th>Driver</th><th>Team</th><th>Gap</th></tr>'+[['1','Max Verstappen','Red Bull Racing','2:20:28.772'],['2','Lewis Hamilton','Ferrari','+0.799s'],['3','Kimi Antonelli','Mercedes','+4.006s'],['4','Charles Leclerc','Ferrari','+10.707s'],['5','Lando Norris','McLaren','+11.778s'],['6','George Russell','Mercedes','+12.263s']].map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</table><button class="go" onclick="restart()">Watch again</button>'},5000/spd)}
+function restart(){if(room&&hostPeer()){joinLive(voiceOn);return}$('#end').hidden=true;logEl.innerHTML='';redDone=false;speechSynthesis&&speechSynthesis.cancel();gridStart(-.001,0)}
+function jump(l){$('#end').hidden=true;speechSynthesis&&speechSynthesis.cancel();
+ if(l==47){redDone=true;gridStart(45.999,46);return}
+ redDone=l>46;lapPos=l-1+.001;lastLap=l-1;snap=true;if(mode=='lights'||mode=='red'||mode=='fin')setMode('green');$('#lights').style.display='none'}
+/* ---- loop ---- */
+let prev=performance.now(),acc=0;
+function frame(t){
+ const dt=Math.min(.05,(t-prev)/1000);prev=t;
+ if(playing&&mode!='lights'&&mode!='red'&&mode!='idle'){
+  const slow=voiceOn&&window.speechSynthesis&&speechSynthesis.speaking?.35:1;
+  lapPos+=dt*spd*slow/({green:8,vsc:11,sc:12,fin:8}[mode]||8);
+  if(mode!='fin'){
+   const l=Math.floor(lapPos)+1;
+   if(l>lastLap){lastLap=l;onLap(l)}
+   if(lapPos>=71)finish();
+   else if(l==46&&lapPos%1>.45&&!redDone&&amHost())startRed()}}
+ else if(mode=='idle')lapPos+=0;
+ draw(dt);acc+=dt;if(acc>.2){acc=0;tower()}
+ requestAnimationFrame(frame)}
+const lapNo=()=>Math.max(1,Math.min(71,Math.floor(lapPos)+1));
+function live(){const l=lapNo(),o=orderAt(l).filter(c=>!gone(c,l)),m=mode=='lights'||mode=='idle'?'grid':mode;let s=0,cs=[];
+ o.forEach((c,r)=>{if(r)s+=m=='grid'?0:spac(l,r,m=='fin'?'green':m);cs.push(s)});return{l,o,cs,m}}
+/* ---- 3D world ---- */
+let scene,cam,ren,cars={},scar,avatar,camMode='heli',orbA=0,orbR=560,orbH=320,yaw=0,pitch=-.15,fly=null,drag=null,keys={},touches=0;
+const du=typeof THREE!='undefined'?new THREE.Object3D():null;
+const mk=(g,c,o)=>new THREE.Mesh(g,new THREE.MeshLambertMaterial(Object.assign({color:c},o||{})));
+function label(t,sz,col){const c=document.createElement('canvas');c.width=512;c.height=128;const g=c.getContext('2d');g.font='700 64px sans-serif';g.textAlign='center';g.lineWidth=10;g.strokeStyle='#000';g.strokeText(t,256,82);g.fillStyle=col||'#fff';g.fillText(t,256,82);
+ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));s.scale.set(sz*4,sz,1);s.renderOrder=9;return s}
+function ribbon(w,y,col){const v=[],ix=[];
+ for(let i=0;i<N;i++){const a=R[i],b=R[(i+1)%N],dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz),nx=-dz/l*w/2,nz=dx/l*w/2;
+  v.push(a[0]-500+nx,y,a[1]-300+nz,a[0]-500-nx,y,a[1]-300-nz);const j=i*2,k=((i+1)%N)*2;ix.push(j,j+1,k,j+1,k+1,k)}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(v,3));g.setIndex(ix);g.computeVertexNormals();
+ scene.add(mk(g,col,{side:THREE.DoubleSide}))}
+function makeCar(c){const g=new THREE.Group(),col=D[c][0],b=new THREE.Group();
+ const add=(geo,cl,px,py,pz)=>{const m=mk(geo,cl);m.position.set(px,py,pz);g.add(m);return m};
+ add(new THREE.BoxGeometry(13,2.4,4.6),col,0,2.2,0);add(new THREE.BoxGeometry(6,1.4,2.6),col,8,1.8,0);
+ add(new THREE.BoxGeometry(1.4,.4,9),0x222222,11.5,.9,0);add(new THREE.BoxGeometry(1.6,3,7),0x222222,-7,4,0);
+ add(new THREE.SphereGeometry(1.4,10,8),D[c][1]?0xffffff:0x111111,-1,4.2,0);
+ if(D[c][1])add(new THREE.BoxGeometry(5,.3,1.2),0xffffff,2,3.5,0);
+ [[5,3.6],[5,-3.6],[-5,3.6],[-5,-3.6]].forEach(w=>{const m=mk(new THREE.CylinderGeometry(1.8,1.8,2.2,14),0x111111);m.rotation.x=Math.PI/2;m.position.set(w[0],1.8,w[1]);g.add(m)});
+ const t=label(c,4,'#fff');t.position.y=13;g.add(t);
+ const bc=mk(new THREE.SphereGeometry(1.6,8,6),0xffb800,{emissive:0xffb800});bc.position.y=8;g.add(bc);g.userData.b=bc;
+ g.scale.setScalar(1.5);scene.add(g);return g}
+function init3d(){
+ const box=$('#c3');ren=new THREE.WebGLRenderer({antialias:true});ren.setPixelRatio(Math.min(2,devicePixelRatio));box.append(ren.domElement);
+ scene=new THREE.Scene();scene.background=new THREE.Color(0x8fc4ee);scene.fog=new THREE.Fog(0x8fc4ee,800,2800);
+ cam=new THREE.PerspectiveCamera(62,1.6,1,4000);
+ scene.add(new THREE.HemisphereLight(0xffffff,0x4a7a52,.95));const sun=new THREE.DirectionalLight(0xfff1d0,.8);sun.position.set(300,500,200);scene.add(sun);
+ const gr=mk(new THREE.PlaneGeometry(6000,6000),0x5f9a5a);gr.rotation.x=-Math.PI/2;gr.position.y=-.5;scene.add(gr);
+ ribbon(46,.05,0xe6397a);ribbon(36,.1,0xffffff);ribbon(32,.15,0x3b4352);
+ const s=pos(0),G=new THREE.Group();G.position.set(s[0]-500,0,s[1]-300);G.rotation.y=-s[2];
+ G.add(Object.assign(mk(new THREE.BoxGeometry(4,.3,32),0xffffff),{position:new THREE.Vector3(0,.3,0)}));
+ [-26,26].forEach(z=>{const p=mk(new THREE.BoxGeometry(3,34,3),0x2a3140);p.position.set(0,17,z);G.add(p)});
+ const bm=mk(new THREE.BoxGeometry(6,6,58),0xe6397a);bm.position.y=34;G.add(bm);
+ const bl=label('GRAN PREMIO DE LA CIUDAD DE MÉXICO',9,'#f6b02a');bl.position.set(0,48,0);G.add(bl);scene.add(G);
+ [['Turn 1',800,495],['Turn 6',790,290],['Foro Sol',130,265]].forEach(a=>{const l=label(a[0],8,'#f6b02a');l.position.set(a[1]-500,38,a[2]-300);scene.add(l)});
+ /* grandstands + crowd */
+ const F=near(130,265),segs=[[.93,1.12],[T1-.04,T1+.05],[F-.05,F+.07],[T6-.03,T6+.03]],cen=[450,300],pal=[0xf6b02a,0xe6397a,0x1f9a8f,0xffffff,0x2d7de0,0x2fa84f],sl=[],cr2=[];
+ segs.forEach(([a,b])=>{for(let f=a;f<b;f+=.004){const p=pos(f);let nx=-Math.sin(p[2]),nz=Math.cos(p[2]);if(nx*(p[0]-cen[0])+nz*(p[1]-cen[1])<0){nx=-nx;nz=-nz}
+  for(let t=0;t<3;t++){const d=36+t*8,h=6+t*4,X=p[0]-500+nx*d,Z=p[1]-300+nz*d;sl.push([X,h/2,Z,p[2],h]);
+   for(let k=-1;k<=1;k++)cr2.push([X+Math.cos(p[2])*k*4.4,h+1.6,Z+Math.sin(p[2])*k*4.4,p[2]])}}});
+ const sm=new THREE.InstancedMesh(new THREE.BoxGeometry(12,1,8),new THREE.MeshLambertMaterial({color:0x4a587a}),sl.length);
+ sl.forEach((q,i)=>{du.position.set(q[0],q[1],q[2]);du.rotation.set(0,-q[3],0);du.scale.set(1,q[4],1);du.updateMatrix();sm.setMatrixAt(i,du.matrix)});scene.add(sm);
+ const cm=new THREE.InstancedMesh(new THREE.BoxGeometry(2.4,3.2,2.4),new THREE.MeshLambertMaterial({color:0xffffff}),cr2.length);
+ cr2.forEach((q,i)=>{du.position.set(q[0],q[1],q[2]);du.rotation.set(0,-q[3],0);du.scale.set(1,1,1);du.updateMatrix();cm.setMatrixAt(i,du.matrix);cm.setColorAt(i,new THREE.Color(pal[i*7%6]))});scene.add(cm);
+ for(let i=0;i<40;i++){const a=i/40*6.28,r=1700+(i*37%400),h=140+(i*53%160),m=mk(new THREE.ConeGeometry(130,h*2,5),0x6f86aa);m.position.set(Math.cos(a)*r,h-20,Math.sin(a)*r);scene.add(m)}
+ Object.keys(D).forEach(c=>cars[c]=makeCar(c));buildPodium();
+ scar=mk(new THREE.BoxGeometry(14,3,6),0xf6b02a,{emissive:0x553300});scene.add(scar);
+ avatar=makeAvatar(0x1f9a8f,'You');scene.add(avatar);
+ fly=new THREE.Vector3(-60,10,236);avatar.position.set(-60,0,236);
+ const rs=()=>{const w=box.clientWidth,h=box.clientHeight;ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()};
+ new ResizeObserver(rs).observe(box);rs();
+ const el=ren.domElement;
+ el.addEventListener('pointerdown',e=>{drag=[e.clientX,e.clientY];el.setPointerCapture(e.pointerId)});
+ el.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag[0],dy=e.clientY-drag[1];drag=[e.clientX,e.clientY];
+  if(camMode=='fly'){yaw+=dx*.005;pitch=Math.max(-1.4,Math.min(1.4,pitch-dy*.005))}else{orbA-=dx*.005;orbH=Math.max(30,Math.min(900,orbH+dy*2))}});
+ el.addEventListener('pointerup',()=>drag=null);
+ el.addEventListener('wheel',e=>{e.preventDefault();orbR=Math.max(150,Math.min(1400,orbR+e.deltaY*.5))},{passive:false});
+ el.addEventListener('touchstart',e=>touches=e.touches.length);el.addEventListener('touchend',e=>touches=e.touches.length);
+ addEventListener('keydown',e=>{if(e.target.tagName!='INPUT')keys[e.code]=1});addEventListener('keyup',e=>keys[e.code]=0);
+ return true}
+function setCam(m){camMode=m;document.querySelectorAll('#cams button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m==m));
+ $('#hint').textContent={tv:'Broadcast chase camera on the race leader.',heli:'Drag to orbit, scroll to zoom.',onboard:'Onboard view from the race leader.',fly:'Explore: drag to look, W A S D to walk, Q / E up and down, Shift to run. On touch: drag to look, hold two fingers to walk.'}[m]}
+function draw(dt){
+ const{l,o,cs,m}=live();
+ $('#lap').textContent='Lap '+(mode=='idle'?0:l)+'/71';
+ o.forEach((c,r)=>{const t=m=='grid'?r*.0075:cs[r]/90;off[c]=snap?t:off[c]+(t-off[c])*Math.min(1,dt*3)});
+ if(snap)snap=false;if(!ren)return;
+ Object.keys(D).forEach(c=>{const g=cars[c],stop=gone(c,l)&&parkEnd[c]&&l<parkEnd[c];
+  if(gone(c,l)&&!stop){g.visible=false;return}g.visible=true;
+  const p=pos(stop?park[c]:lapPos-off[c]);let px=p[0]-500,pz=p[1]-300;
+  if((PITS[l]||[]).includes(c)&&lapPos%1<.6){px-=Math.sin(p[2])*20;pz+=Math.cos(p[2])*20}
+  g.position.set(px,0,pz);g.rotation.y=-p[2];g.userData.p=[px,pz,p[2]];g.userData.b.visible=!!stop&&Date.now()%800<400});
+ scar.visible=m=='sc'||m=='vsc';if(scar.visible){const p=pos(lapPos+.016);scar.position.set(p[0]-500,2,p[1]-300);scar.rotation.y=-p[2]}
+ const[a,b,h]=cars[o[0]].userData.p,dx=Math.cos(h),dz=Math.sin(h),k=Math.min(1,dt*3);
+ avatar.visible=camMode!='fly';
+ if(camMode=='fly'){const sp=(keys.ShiftLeft?160:70)*dt,fx=Math.sin(yaw),fz=-Math.cos(yaw),mv=touches>1?1:(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown?1:0),st=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0);
+  fly.x+=(fx*mv-fz*st)*sp;fly.z+=(fz*mv+fx*st)*sp;fly.y=Math.max(3,fly.y+((keys.KeyE?1:0)-(keys.KeyQ?1:0))*sp);
+  cam.position.copy(fly);cam.lookAt(fly.x+Math.cos(pitch)*fx,fly.y+Math.sin(pitch),fly.z+Math.cos(pitch)*fz);avatar.position.set(fly.x,Math.max(0,fly.y-10),fly.z)}
+ else if(camMode=='tv'){cam.position.lerp(new THREE.Vector3(a-dx*62,28,b-dz*62),k);cam.lookAt(a+dx*28,3,b+dz*28)}
+ else if(camMode=='onboard'){cam.position.set(a-dx*2,5,b-dz*2);cam.lookAt(a+dx*40,3,b+dz*40)}
+ else{if(!drag)orbA+=dt*.06;cam.position.lerp(new THREE.Vector3(Math.cos(orbA)*orbR,orbH,Math.sin(orbA)*orbR),Math.min(1,dt*4));cam.lookAt(0,0,0)}
+ animNet(dt);ren.render(scene,cam)}
+function tower(){const{l,o,cs,m}=live();let h='';
+ o.forEach((c,r)=>{const g=r==0?'Leader':m=='grid'?'':'+'+cs[r].toFixed(1),pit=(PITS[l]||[]).includes(c)&&lapPos%1<.6;
+  h+=`<li><b>${r+1}</b><i style="background:${D[c][0]}"></i><span>${c}</span><em>${g}</em><span>${c=='LEC'&&l<27?'<s>+5s</s>':''}${c=='RUS'&&l<33?'<s>+10s</s>':''}${pit?'<s>PIT</s>':''}</span></li>`});
+ Object.keys(D).filter(c=>gone(c,l)).forEach(c=>h+=`<li class="out"><b>–</b><i style="background:${D[c][0]}"></i><span>${c}</span><em>OUT</em><span></span></li>`);
+ $('#tw').innerHTML=h;mini()}
+/* ---- metaverse layer: shared room, avatars, chat, emotes, teleports ---- */
+let room=null,started=false,lk=0,wasHost=true,lastQ=null,podium,emotes=[],peerG={},hue=Math.random()*360|0,nick='Visitor '+(1000+Math.random()*9000|0);
+const hx=h=>new THREE.Color().setHSL(h/360,.7,.5).getHex(),OK=['👏','🎉','🏁','🔥','🌮'];
+function makeAvatar(col,name){const g=new THREE.Group(),b=mk(new THREE.CylinderGeometry(2,2.4,7,10),col);b.position.y=3.5;g.add(b);
+ const h=mk(new THREE.SphereGeometry(1.9,10,8),0xf6b02a);h.position.y=8.5;g.add(h);const c=mk(new THREE.CylinderGeometry(1.5,2,1,10),col);c.position.y=10.4;g.add(c);
+ const l=label(name,4,'#fff');l.position.y=15.5;g.add(l);g.userData.n=name;return g}
+function hostPeer(){if(!room)return null;const ps=room.peers().filter(p=>p.kind=='viewer'&&p.presence.run===1).sort((a,b)=>a.peer<b.peer?-1:1);return ps[0]||null}
+function amHost(){const h=hostPeer();return !h||h.sameTab}
+function takeover(){if(mode=='red')setTimeout(()=>{if(mode=='red')gridStart(45.999,46)},3000/spd);else if(mode=='lights')lights(()=>setMode(modeFor(lastLap+1)))}
+function syncHost(){if(!room||!playing||amHost())return;const q=hostPeer().presence;if(q===lastQ)return;lastQ=q;
+ if(q.lp!=null){if(Math.abs(q.lp-lapPos)>.6){lastLap=Math.floor(q.lp)+1;snap=true}lapPos=q.lp}
+ spd=q.pz?0:(q.sp||1);const L=$('#lights');
+ if(q.md=='lights'){L.style.display='flex';[...L.children].forEach((i,k)=>i.className=k<(q.lt||0)?'on':'')}else if(L.style.display=='flex')L.style.display='none';
+ if(q.md&&q.md!=mode&&q.md!='fin'&&mode!='fin')setMode(q.md)}
+function joinLive(v){const q=hostPeer().presence;voiceOn=v;$('#vo').checked=v;$('#intro').hidden=true;$('#end').hidden=true;playing=started=true;setCam('tv');spd=1;$('#spd').value=1;
+ if(v&&window.speechSynthesis){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance('.');u.volume=0;speechSynthesis.speak(u)}
+ lapPos=q.lp||0;lastLap=Math.floor(lapPos)+1;snap=true;lastQ=null;setMode(q.md&&q.md!='fin'?q.md:'green');
+ say('M','You are in the live paddock, joining the race already in progress.');syncHost()}
+function sendPresence(){if(!room||!fly)return;const h=amHost();if(h&&!wasHost)takeover();wasHost=h;
+ room.presence({n:nick,h:hue,x:+fly.x.toFixed(1),y:+fly.y.toFixed(1),z:+fly.z.toFixed(1),yw:+yaw.toFixed(2),cm:camMode,run:started&&mode!='fin'?1:null,lp:+lapPos.toFixed(4),md:mode,lt:lk,sp:spd,pz:playing?null:1}).catch(()=>{});
+ $('#pp').disabled=$('#spd').disabled=!!(playing&&!h)}
+function onPeers(ch){ch.left.forEach(p=>{const g=peerG[p.peer];if(g){scene.remove(g);delete peerG[p.peer]}});
+ ch.peers.forEach(p=>{const q=p.presence;if(p.sameTab||!scene||q.x==null)return;const nm=String(q.n||'Visitor').slice(0,24);let g=peerG[p.peer];
+  if(!g||g.userData.n!=nm){const o=g;g=makeAvatar(hx(+q.h||200),nm);g.position.set(q.x,0,q.z);if(o){g.position.copy(o.position);scene.remove(o)}scene.add(g);peerG[p.peer]=g}
+  g.userData.t=[q.x,q.z];g.userData.q=q});vis();syncHost()}
+function vis(){const ps=room?room.peers():[],ul=$('#vis');$('#net').textContent=room?'Live · '+ps.length+' here':'Solo';ul.innerHTML='';
+ ps.forEach(p=>{const q=p.presence,li=document.createElement('li'),a=document.createElement('span'),b=document.createElement('em');li.className='v';
+  a.textContent=(p.sameTab?'You · ':'')+String(q.n||'Visitor').slice(0,24);b.textContent={fly:'exploring',tv:'broadcast',heli:'helicopter',onboard:'onboard'}[q.cm]||'';li.append(a,b);
+  if(!p.sameTab&&q.x!=null)li.onclick=()=>tpTo(q.x,q.z);ul.append(li)});
+ if(!playing){const j=!!hostPeer();$('#goV').textContent=j?'Join the live race with voice-over':'Start with voice-over';$('#goC').textContent=j?'Join the live race, captions only':'Start with captions only'}}
+function addMsg(n,t,me){const d=document.createElement('div'),b=document.createElement('b');b.textContent=(n||'Visitor')+': ';d.append(b,document.createTextNode(String(t||'').slice(0,200)));if(me)b.style.color='var(--teal)';
+ const m=$('#msgs');m.append(d);while(m.children.length>40)m.firstChild.remove();m.scrollTop=m.scrollHeight}
+function sendChat(t){if(room&&room.connected())room.emit('chat',{n:nick,t}).catch(()=>addMsg('Paddock','Chatting needs Contributor access to this artifact.'));else addMsg(nick,t,1)}
+function spawnEmote(m){const e=m.data&&m.data.e;if(!scene||!OK.includes(e))return;const g=m.sameTab?avatar:peerG[m.peer];if(!g)return;
+ const c=document.createElement('canvas');c.width=c.height=128;const q=c.getContext('2d');q.font='96px sans-serif';q.textAlign='center';q.fillText(e,64,100);
+ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:false}));s.scale.set(9,9,1);s.position.copy(g.position);s.position.y+=18;s.renderOrder=10;scene.add(s);emotes.push([s,0])}
+function sendEmote(e){if(room&&room.connected())room.emit('emote',{e}).catch(()=>{});else spawnEmote({sameTab:true,data:{e}})}
+function animNet(dt){const k=Math.min(1,dt*8);
+ Object.values(peerG).forEach(g=>{const t=g.userData.t,q=g.userData.q;if(!t)return;g.position.x+=(t[0]-g.position.x)*k;g.position.z+=(t[1]-g.position.z)*k;g.position.y+=(Math.max(0,(q.y||10)-10)-g.position.y)*k});
+ for(let i=emotes.length-1;i>=0;i--){const e=emotes[i];e[1]+=dt;e[0].position.y+=dt*7;e[0].material.opacity=Math.max(0,1-e[1]/3);if(e[1]>3){scene.remove(e[0]);e[0].material.map.dispose();e[0].material.dispose();emotes.splice(i,1)}}
+ if(podium)podium.visible=mode=='fin'}
+function outward(f,d){const p=pos(f);let nx=-Math.sin(p[2]),nz=Math.cos(p[2]);if(nx*(p[0]-450)+nz*(p[1]-300)<0){nx=-nx;nz=-nz}return[p[0]-500+nx*d,p[1]-300+nz*d,p[0]-500,p[1]-300]}
+function tele(x,y,z,tx,tz,pt){fly.set(x,y,z);yaw=Math.atan2(tx-x,-(tz-z));pitch=pt==null?-.2:pt;setCam('fly')}
+function tpTo(x,z){tele(x+12,14,z+12,x,z)}
+const spot=(f,d,y,pt)=>()=>{const o=outward(f,d);tele(o[0],y,o[1],o[2],o[3],pt)};
+const SPOTS={'Start line':()=>spot(0,40,9)(),'Turn 1 grandstand':()=>spot(T1,58,26,-.25)(),'Turn 6':()=>spot(T6,58,22,-.2)(),'Foro Sol stands':()=>spot(near(130,265),60,24,-.25)(),
+ 'Podium':()=>{const a=outward(.965,-15),b=outward(.965,-90);tele(a[0],10,a[1],b[0],b[1],-.05)},'Sky deck':()=>tele(0,320,0,0,-1,-1)};
+function buildPodium(){podium=new THREE.Group();const o=outward(.965,-90);podium.position.set(o[0],0,o[1]);
+ [['VER',0,9,0xf6b02a],['HAM',-9,6.5,0xc0c8d4],['ANT',9,4.5,0xcd7f32]].forEach(a=>{const b=mk(new THREE.BoxGeometry(8,a[2],8),a[3]);b.position.set(a[1],a[2]/2,0);podium.add(b);const l=label(a[0],5,'#fff');l.position.set(a[1],a[2]+7,0);podium.add(l)});
+ podium.visible=false;scene.add(podium)}
+function mini(){const c=$('#mm');if(!c)return;const g=c.getContext('2d'),s=c.width/1000,X=v=>(v+500)*s,Z=v=>(v+300)*s;g.clearRect(0,0,c.width,c.height);g.lineWidth=5;g.strokeStyle='#8893a8';g.beginPath();
+ R.forEach((p,i)=>i?g.lineTo(p[0]*s,p[1]*s):g.moveTo(p[0]*s,p[1]*s));g.closePath();g.stroke();
+ Object.keys(D).forEach(k=>{const q=cars[k];if(!q||!q.visible)return;g.fillStyle=D[k][0];g.beginPath();g.arc(X(q.position.x),Z(q.position.z),2.6,0,7);g.fill()});
+ const dot=(x,z,col)=>{g.fillStyle=col;g.strokeStyle='#fff';g.lineWidth=1.5;g.beginPath();g.arc(X(x),Z(z),4,0,7);g.fill();g.stroke()};
+ Object.values(peerG).forEach(p=>dot(p.position.x,p.position.z,'#f6b02a'));if(fly)dot(fly.x,fly.z,'#2fe6c8')}
+async function initNet(){try{const c=window.claude;if(!c||!c.use)return;const[r,u]=await Promise.all([c.use('room'),c.use('user')]);
+ if(u){try{const m=await u.me();if(m&&m.name)nick=m.name.slice(0,24)}catch(e){}}
+ if(!r)return;room=r;room.onPeers(onPeers);
+ room.on('chat',m=>addMsg(m.data&&m.data.n,m.data&&m.data.t,m.sameTab));room.on('emote',spawnEmote);
+ addMsg('Paddock','You are in the shared room as '+nick+'. Share this artifact so friends can join.');vis();setInterval(sendPresence,100)}catch(e){}}
+let ac,ag;$('#amb').onchange=e=>{if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();const b=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate),d=b.getChannelData(0);let l=0;
+ for(let i=0;i<d.length;i++){l=(l+.02*(Math.random()*2-1))/1.02;d[i]=l*3.5}const s=ac.createBufferSource();s.buffer=b;s.loop=true;const f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=900;ag=ac.createGain();s.connect(f);f.connect(ag);ag.connect(ac.destination);s.start()}
+ ag.gain.value=e.target.checked?.5:0;ac.resume()};
+$('#ci').onkeydown=e=>{if(e.key=='Enter'){const t=e.target.value.trim().slice(0,200);e.target.value='';if(t)sendChat(t)}};
+OK.forEach(e=>{const b=document.createElement('button');b.textContent=e;b.setAttribute('aria-label','Emote '+e);b.onclick=()=>sendEmote(e);$('#em').append(b)});
+/* ---- controls ---- */
+function begin(v){if(room&&hostPeer()){joinLive(v);return}started=true;voiceOn=v;setCam('tv');$('#vo').checked=v;$('#intro').hidden=true;playing=true;
+ if(v&&window.speechSynthesis){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance('Welcome to Mexico City.');u.volume=0;speechSynthesis.speak(u)}
+ say('M','Welcome to the Autódromo Hermanos Rodríguez. Seventy-one laps lie ahead, and the field is on the grid.');
+ gridStart(-.001,0)}
+$('#goV').onclick=()=>begin(true);$('#goC').onclick=()=>begin(false);
+$('#pp').onclick=e=>{playing=!playing;e.target.textContent=playing?'Pause':'Resume';if(window.speechSynthesis)playing?speechSynthesis.resume():speechSynthesis.pause()};
+$('#spd').onchange=e=>spd=+e.target.value;
+$('#vo').onchange=e=>{voiceOn=e.target.checked;if(!voiceOn&&window.speechSynthesis)speechSynthesis.cancel()};
+[[1,'Start'],[7,'VSC'],[27,'Pit stops'],[44,'Safety Car'],[46,'Red flag'],[47,'Restart'],[64,'Late SC'],[71,'Finale']].forEach(a=>{const b=document.createElement('button');b.textContent=a[1];b.onclick=()=>{if(mode!='idle'&&amHost()){jump(a[0])}};$('#jumps').append(b)});
+try{if(window.THREE)init3d();else throw 0}catch(e){$('#c3').innerHTML='<p style="padding:20px">The 3D engine could not start (WebGL or the three.js script was blocked).</p>'}
+const cb=document.createElement('div');cb.id='cams';cb.className='ctrl';
+[['tv','Broadcast'],['heli','Helicopter'],['onboard','Onboard'],['fly','Explore as visitor']].forEach(a=>{const b=document.createElement('button');b.textContent=a[1];b.dataset.m=a[0];b.onclick=()=>setCam(a[0]);cb.append(b)});
+const hi=document.createElement('span');hi.id='hint';hi.style.cssText='color:var(--mute);font-size:13px';cb.append(hi);const sel=document.createElement('select');sel.setAttribute('aria-label','Teleport');sel.innerHTML='<option value="">Teleport to…</option>'+Object.keys(SPOTS).map(k=>'<option>'+k+'</option>').join('');
+sel.onchange=()=>{if(sel.value&&fly){SPOTS[sel.value]();sel.value=''}};cb.append(sel);$('.ctrl').after(cb);setCam('heli');initNet();
+tower();requestAnimationFrame(frame);
+</script>
+</body>
+</html>
